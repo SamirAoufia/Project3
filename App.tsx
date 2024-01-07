@@ -100,25 +100,7 @@ export default function App() {
     }
   }
 
-  function publishToTemperature() {
-    const val = temp;
-    const topic = 'Temperature';
 
-    if (client.isConnected()) {
-      const mqttMessage = new Paho.Message(val.toString());
-      mqttMessage.destinationName = topic;
-      client.send(mqttMessage);
-      console.log(`Message sent to topic ${topic}: ${val}`);
-
-      // Mise à jour de l'historique local avec la nouvelle valeur
-      setHistoricalData((prevData) => [...prevData, val]);
-
-      // Stockage de l'historique dans AsyncStorage
-      storeData([...prevData, val]);
-    } else {
-      console.log('Not connected to MQTT. Cannot send message.');
-    }
-  }
 
   const storeData = async (data: string[]) => {
     try {
@@ -238,6 +220,7 @@ export default function App() {
 
       <View style={styles.homescreen}>
         <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Welcome to the Project.</Text>
+        <Text style={styles.justifiedText}>This year, as part of a multidisciplinary project 3, I have started a project on temperature control. The principle of this project is the integration of hardware and software components to create an efficient and autonomous system.</Text>
         <View style={{ marginBottom: 20, marginTop: 20 }}>
         </View>
       </View>
@@ -345,13 +328,13 @@ const formatTimePlusOneHour = (time) => {
         <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Welcome to my</Text>
         <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Multidisciplinary Project 3</Text>
         <View style={{ marginBottom: 20, marginTop: 20 }}>
-          <Button title="Go to Project" onPress={() => navigation.navigate('Project')} />
+          <Button title="Project" onPress={() => navigation.navigate('Project')} />
         </View>
         <View style={{ marginBottom: 20 }}>
-          <Button title="Go to Value" onPress={() => navigation.navigate('Value')} />
+          <Button title="Value" onPress={() => navigation.navigate('Value')} />
         </View>
         <View style={{ marginBottom: 20 }}>
-          <Button title="Go to History" onPress={() => navigation.navigate('History')} />
+          <Button title="History" onPress={() => navigation.navigate('History')} />
         </View>
       </View>
     )
@@ -404,5 +387,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 10,
   },
+  justifiedText: {
+    textAlign: 'justify',
+    lineHeight: 24,
+    fontSize: 20,
+    marginTop: 20,
+    marginRight: 5,
+    marginLeft: 5,
+  },
+
+  
 });
 
