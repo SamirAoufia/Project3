@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import { SafeAreaView, TextInput, Image } from 'react-native';
+import { SafeAreaView, TextInput } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Paho from 'paho-mqtt';
@@ -9,16 +8,12 @@ import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Créer une instance client MQTT
-const client = new Paho.Client('192.168.7.45', Number(9001), 'mqtt-async-test-${Math.random()*100}'); //IP de mon pc pour mqtt
+const client = new Paho.Client('192.168.0.153', Number(9001), 'mqtt-async-test-${Math.random()*100}'); //IP de mon pc pour mqtt
 
 export default function App() {
   const [value, setValue] = useState(0);
-  const [v1, setV1] = useState(0);
-  const [v2, setV2] = useState(0);
-  const [v3, setV3] = useState(0);
-  const [v0, setV0] = useState(0);
-  const [temp, onChangeText] = React.useState('');
   const [connected, setConnected] = useState(false);
+
   const clearHistoricalData = async () => {
     try {
       await AsyncStorage.removeItem('historicalData');
@@ -39,62 +34,14 @@ export default function App() {
     }
   }
 
-  function publishTOnOff1() {
-    const v1 = 1;
-    const topic = 'OnOff';
 
+  function publishToMQTT(value: any) {
+    const topic = 'OnOff';
     if (client.isConnected()) {
-      const mqttMessage = new Paho.Message(v1.toString());
+      const mqttMessage = new Paho.Message(value.toString());
       mqttMessage.destinationName = topic;
       client.send(mqttMessage);
-      console.log(`Message sent to topic ${topic}: ${v1}`);
-      setV1(v1); // Met à jour la valeur localement
-    } else {
-      console.log('Not connected to MQTT. Cannot send message.');
-    }
-  }
-
-  function publishTOnOff2() {
-    const v2 = 2;
-    const topic = 'OnOff';
-
-    if (client.isConnected()) {
-      const mqttMessage = new Paho.Message(v2.toString());
-      mqttMessage.destinationName = topic;
-      client.send(mqttMessage);
-      console.log(`Message sent to topic ${topic}: ${v2}`);
-      setV2(v2); // Met à jour la valeur localement
-    } else {
-      console.log('Not connected to MQTT. Cannot send message.');
-    }
-  }
-
-  function publishTOnOff3() {
-    const v3 = 3;
-    const topic = 'OnOff';
-
-    if (client.isConnected()) {
-      const mqttMessage = new Paho.Message(v3.toString());
-      mqttMessage.destinationName = topic;
-      client.send(mqttMessage);
-      console.log(`Message sent to topic ${topic}: ${v3}`);
-      setV3(v3); // Met à jour la valeur localement
-    } else {
-      console.log('Not connected to MQTT. Cannot send message.');
-    }
-  }
-
-
-  function publishTOnOff0() {
-    const v0 = 0;
-    const topic = 'OnOff';
-
-    if (client.isConnected()) {
-      const mqttMessage = new Paho.Message(v0.toString());
-      mqttMessage.destinationName = topic;
-      client.send(mqttMessage);
-      console.log(`Message sent to topic ${topic}: ${v0}`);
-      setV0(v0); // Met à jour la valeur localement
+      console.log(`Message sent to topic ${topic}: ${value}`);
     } else {
       console.log('Not connected to MQTT. Cannot send message.');
     }
@@ -197,19 +144,17 @@ export default function App() {
         <Text style={{ fontSize: 20, marginTop: 20 }}>Temperature: {value}</Text>
 
         <View style={{ marginBottom: 20, marginTop: 20 }}>
-          <Button title="OFF peltier / ON ventilator" onPress={publishTOnOff1} />
-
-        </View>
-        <View style={{ marginBottom: 20 }}>
-          <Button title="On peltier / Off ventilator" onPress={publishTOnOff2} />
-        </View>
-        <View style={{ marginBottom: 20 }}>
-          <Button title="ALL OFF" onPress={publishTOnOff3} />
-        </View>
-
-        <View style={{ marginBottom: 20 }}>
-          <Button title="Normal" onPress={publishTOnOff0} />
-        </View>
+        <Button title="OFF lamp / ON ventilator" onPress={() => publishToMQTT(1)} />
+      </View>
+      <View style={{ marginBottom: 20 }}>
+        <Button title="On lamp / Off ventilator" onPress={() => publishToMQTT(2)} />
+      </View>
+      <View style={{ marginBottom: 20 }}>
+        <Button title="ALL OFF" onPress={() => publishToMQTT(3)} />
+      </View>
+      <View style={{ marginBottom: 20 }}>
+        <Button title="Automatic" onPress={() => publishToMQTT(4)} />
+      </View>
       </View>
     );
   }
@@ -291,7 +236,7 @@ const formatTimePlusOneHour = (time) => {
       if (text == "Admin" && text2 == "Admin") {
         navigation.navigate('Log')
       } else {
-        alert("Mauvais identifiants")
+        alert( "Wrong password or username" )
       }
 
     }
